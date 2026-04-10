@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ArrowRight, Eye, EyeOff, Save } from 'lucide-react'
+import { ArrowRight, Eye, EyeOff, Save, Info } from 'lucide-react'
 
 const TiptapEditor = dynamic(
   () => import('@/components/editor/TiptapEditor').then((m) => m.TiptapEditor),
@@ -75,7 +75,7 @@ export function AdminPostEditor({ initialData, mode }: AdminPostEditorProps) {
       if (!res.ok) {
         const data = await res.json()
         setError(data.error ?? 'فشل الحفظ')
-        return
+        return  // stay on page so user can copy content
       }
       router.push('/admin')
       router.refresh()
@@ -121,6 +121,12 @@ export function AdminPostEditor({ initialData, mode }: AdminPostEditorProps) {
       </div>
 
       <div className="max-w-5xl mx-auto px-6 py-8">
+        {/* Local-only banner */}
+        <div className="flex items-center gap-3 mb-6 bg-primary-container/20 border border-primary/20 rounded-xl px-5 py-3 text-sm text-on-surface-variant">
+          <Info size={16} className="shrink-0 text-primary" />
+          <span>التعديلات تُحفظ محلياً فقط — ارفع على GitHub لنشرها</span>
+        </div>
+
         {error && (
           <div className="mb-6 text-sm text-error bg-error-container/20 rounded-lg px-4 py-3">
             {error}

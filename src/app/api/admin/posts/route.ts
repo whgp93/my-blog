@@ -13,7 +13,13 @@ export async function GET() {
   return NextResponse.json(posts)
 }
 
+const LOCAL_ONLY_ERROR = 'التعديلات تُحفظ محلياً فقط — ارفع على GitHub لنشرها'
+
 export async function POST(req: NextRequest) {
+  if (process.env.VERCEL) {
+    return NextResponse.json({ error: LOCAL_ONLY_ERROR, localOnly: true }, { status: 403 })
+  }
+
   try {
     const { title, category, image, excerpt, author, featured, slug, content } = await req.json()
 

@@ -5,5 +5,5 @@ export const dynamic = 'force-dynamic'
 
 export default function AdminPage() {
   const posts = getAllPosts()
-  return <PostsTable posts={posts} />
+  return <PostsTable posts={posts} isVercel={!!process.env.VERCEL} />
 }

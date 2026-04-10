@@ -6,6 +6,10 @@ import TurndownService from 'turndown'
 
 const td = new TurndownService({ headingStyle: 'atx', bulletListMarker: '-' })
 
+const LOCAL_ONLY_ERROR = 'التعديلات تُحفظ محلياً فقط — ارفع على GitHub لنشرها'
+const localOnlyResponse = () =>
+  NextResponse.json({ error: LOCAL_ONLY_ERROR, localOnly: true }, { status: 403 })
+
 function postPath(slug: string) {
   return path.join(process.cwd(), 'content', 'posts', `${decodeURIComponent(slug)}.md`)
 }
@@ -21,6 +25,7 @@ export async function GET(_req: NextRequest, { params }: { params: { slug: strin
 }
 
 export async function PUT(req: NextRequest, { params }: { params: { slug: string } }) {
+  if (process.env.VERCEL) return localOnlyResponse()
   try {
     const { title, category, image, excerpt, author, featured, content } = await req.json()
 
@@ -55,6 +60,7 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: { slug: string } }) {
+  if (process.env.VERCEL) return localOnlyResponse()
   try {
     await unlink(postPath(params.slug))
     return NextResponse.json({ ok: true })

@@ -2,19 +2,20 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Pencil, Trash2, Plus, ExternalLink, LogOut } from 'lucide-react'
+import { Pencil, Trash2, Plus, ExternalLink, LogOut, Info } from 'lucide-react'
 import type { PostMeta } from '@/types/post'
 
 interface PostsTableProps {
   posts: PostMeta[]
 }
 
-export function PostsTable({ posts: initialPosts }: PostsTableProps) {
+export function PostsTable({ posts: initialPosts, isVercel }: PostsTableProps & { isVercel: boolean }) {
   const [posts, setPosts] = useState(initialPosts)
   const [deleting, setDeleting] = useState<string | null>(null)
   const router = useRouter()
 
   const handleDelete = async (slug: string, title: string) => {
+    if (isVercel) return
     if (!confirm(`هل أنت متأكد من حذف "${title}"؟`)) return
     setDeleting(slug)
     try {
@@ -22,7 +23,8 @@ export function PostsTable({ posts: initialPosts }: PostsTableProps) {
       if (res.ok) {
         setPosts((prev) => prev.filter((p) => p.slug !== slug))
       } else {
-        alert('فشل حذف المقال')
+        const data = await res.json()
+        alert(data.error ?? 'فشل حذف المقال')
       }
     } catch {
       alert('حدث خطأ')
@@ -45,6 +47,15 @@ export function PostsTable({ posts: initialPosts }: PostsTableProps) {
 
   return (
     <div className="min-h-screen bg-surface p-6 md:p-10">
+      {/* Local-only banner */}
+      <div className="flex items-center gap-3 mb-6 bg-primary-container/20 border border-primary/20 rounded-xl px-5 py-3 text-sm text-on-surface-variant">
+        <Info size={16} className="shrink-0 text-primary" />
+        <span>
+          التعديلات تُحفظ محلياً فقط — ارفع على GitHub لنشرها
+          {isVercel && <strong className="text-error me-2"> (وضع القراءة فقط على Vercel)</strong>}
+        </span>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between mb-10">
         <div>
@@ -52,13 +63,20 @@ export function PostsTable({ posts: initialPosts }: PostsTableProps) {
           <p className="text-sm text-on-surface-variant mt-1">{posts.length} مقال</p>
         </div>
         <div className="flex items-center gap-3">
-          <Link
-            href="/admin/new"
-            className="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-primary-dim transition-colors"
-          >
-            <Plus size={16} />
-            مقال جديد
-          </Link>
+          {isVercel ? (
+            <span className="flex items-center gap-2 bg-surface-container text-on-surface-variant px-5 py-2.5 rounded-md text-xs font-bold uppercase tracking-wider opacity-50 cursor-not-allowed">
+              <Plus size={16} />
+              مقال جديد
+            </span>
+          ) : (
+            <Link
+              href="/admin/new"
+              className="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-primary-dim transition-colors"
+            >
+              <Plus size={16} />
+              مقال جديد
+            </Link>
+          )}
           <button
             onClick={handleLogout}
             className="flex items-center gap-2 text-xs text-on-surface-variant hover:text-on-surface px-3 py-2.5 rounded-md hover:bg-surface-container transition-colors"
@@ -131,21 +149,34 @@ export function PostsTable({ posts: initialPosts }: PostsTableProps) {
                       >
                         <ExternalLink size={15} />
                       </a>
-                      <Link
-                        href={`/admin/edit/${post.slug}`}
-                        className="p-2 rounded-md text-on-surface-variant hover:bg-surface-container-high transition-colors"
-                        title="تعديل"
-                      >
-                        <Pencil size={15} />
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(post.slug, post.title)}
-                        disabled={deleting === post.slug}
-                        className="p-2 rounded-md text-error hover:bg-error-container/20 transition-colors disabled:opacity-40"
-                        title="حذف"
-                      >
-                        <Trash2 size={15} />
-                      </button>
+                      {isVercel ? (
+                        <>
+                          <span className="p-2 rounded-md text-on-surface-variant opacity-30 cursor-not-allowed" title="غير متاح على Vercel">
+                            <Pencil size={15} />
+                          </span>
+                          <span className="p-2 rounded-md text-error opacity-30 cursor-not-allowed" title="غير متاح على Vercel">
+                            <Trash2 size={15} />
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <Link
+                            href={`/admin/edit/${post.slug}`}
+                            className="p-2 rounded-md text-on-surface-variant hover:bg-surface-container-high transition-colors"
+                            title="تعديل"
+                          >
+                            <Pencil size={15} />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(post.slug, post.title)}
+                            disabled={deleting === post.slug}
+                            className="p-2 rounded-md text-error hover:bg-error-container/20 transition-colors disabled:opacity-40"
+                            title="حذف"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
