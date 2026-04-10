@@ -2,8 +2,7 @@ import type { Metadata } from 'next'
 import { Tajawal } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import Script from 'next/script'
-import { Header } from '@/components/layout/Header'
-import { Footer } from '@/components/layout/Footer'
+import { ClientLayout } from '@/components/layout/ClientLayout'
 import './globals.css'
 
 const tajawal = Tajawal({
@@ -57,11 +56,7 @@ export default function RootLayout({
       </head>
       <body className="font-tajawal bg-surface text-on-surface min-h-screen antialiased">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Header />
-          <main className="pt-24">
-            {children}
-          </main>
-          <Footer />
+          <ClientLayout>{children}</ClientLayout>
         </ThemeProvider>
       </body>
     </html>
