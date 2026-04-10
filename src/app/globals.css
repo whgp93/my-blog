@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Light Mode Tokens ===== */
+:root {
+  --color-primary: #595f69;
+  --color-primary-dim: #4d535d;
+  --color-primary-fixed: #dde3ee;
+  --color-primary-fixed-dim: #cfd5e0;
+  --color-primary-container: #dde3ee;
+  --color-on-primary: #f7f9ff;
+  --color-on-primary-container: #4c525b;
+
+  --color-surface: #f9f9f9;
+  --color-surface-dim: #d7dbdb;
+  --color-surface-bright: #f9f9f9;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f4f4;
+  --color-surface-container: #eceeef;
+  --color-surface-container-high: #e6e9e9;
+  --color-surface-container-highest: #dfe3e4;
+
+  --color-on-surface: #2f3334;
+  --color-on-surface-variant: #5b6061;
+
+  --color-outline: #777b7c;
+  --color-outline-variant: #afb3b3;
+
+  --font-tajawal: 'Tajawal', sans-serif;
+  --font-custom: var(--font-tajawal);
+}
+
+/* ===== Dark Mode Tokens ===== */
+.dark {
+  --color-primary: #b9c3d0;
+  --color-primary-dim: #8d97a4;
+  --color-primary-fixed: #2a3040;
+  --color-primary-fixed-dim: #3f4759;
+  --color-primary-container: #2a3040;
+  --color-on-primary: #1a1f28;
+  --color-on-primary-container: #c0c8d5;
+
+  --color-surface: #111415;
+  --color-surface-dim: #0a0d0e;
+  --color-surface-bright: #1a1d1e;
+  --color-surface-container-lowest: #0a0d0e;
+  --color-surface-container-low: #1a1d1e;
+  --color-surface-container: #1e2122;
+  --color-surface-container-high: #282b2c;
+  --color-surface-container-highest: #333637;
+
+  --color-on-surface: #e1e3e5;
+  --color-on-surface-variant: #a9adae;
+
+  --color-outline: #8f9394;
+  --color-outline-variant: #3f4344;
+}
+
+/* ===== Base Styles ===== */
+body {
+  font-family: var(--font-tajawal), 'Tajawal', sans-serif;
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  direction: rtl;
+  text-align: right;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== Tiptap Editor ===== */
+.tiptap {
+  direction: rtl;
+  text-align: right;
+  outline: none;
+  min-height: 400px;
+  padding: 1rem;
+  font-family: var(--font-tajawal), sans-serif;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: right;
+  color: var(--color-outline-variant);
+  pointer-events: none;
+  height: 0;
+}
+
+.tiptap h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.75rem; }
+.tiptap h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+.tiptap h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+.tiptap p { margin-bottom: 1rem; line-height: 1.8; }
+.tiptap blockquote {
+  border-inline-start: 3px solid var(--color-primary-fixed-dim);
+  padding-inline-start: 1rem;
+  margin-inline: 0;
+  color: var(--color-on-surface-variant);
+  font-style: italic;
+}
+.tiptap ul { list-style: disc; padding-inline-start: 1.5rem; margin-bottom: 1rem; }
+.tiptap ol { list-style: decimal; padding-inline-start: 1.5rem; margin-bottom: 1rem; }
+.tiptap a { color: var(--color-primary); text-decoration: underline; }
+.tiptap img { max-width: 100%; border-radius: 0.5rem; margin: 1rem 0; }
+.tiptap strong { font-weight: 700; }
+.tiptap em { font-style: italic; }
+.tiptap code {
+  background-color: var(--color-surface-container);
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  direction: ltr;
+}
+
+/* ===== Prose RTL Overrides ===== */
+.prose {
+  direction: rtl;
+  text-align: right;
+  font-family: var(--font-tajawal), sans-serif;
+}
+
+.prose h1, .prose h2, .prose h3,
+.prose h4, .prose h5, .prose h6 {
+  font-family: var(--font-tajawal), sans-serif;
+  text-align: right;
+}
+
+.prose blockquote {
+  border-inline-start: 4px solid var(--color-primary-fixed-dim);
+  border-inline-end: none;
+  border-left: none;
+  padding-inline-start: 1.5rem;
+  padding-inline-end: 0;
+}
+
+/* ===== Selection ===== */
+::selection {
+  background-color: var(--color-primary-fixed-dim);
+  color: var(--color-on-primary-container);
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-surface-container-low); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: 3px;
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+}
