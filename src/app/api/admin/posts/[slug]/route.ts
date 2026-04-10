@@ -7,7 +7,7 @@ import TurndownService from 'turndown'
 const td = new TurndownService({ headingStyle: 'atx', bulletListMarker: '-' })
 
 function postPath(slug: string) {
-  return path.join(process.cwd(), 'content', 'posts', `${slug}.md`)
+  return path.join(process.cwd(), 'content', 'posts', `${decodeURIComponent(slug)}.md`)
 }
 
 export async function GET(_req: NextRequest, { params }: { params: { slug: string } }) {

@@ -17,7 +17,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
-    const post = getPostBySlug(params.slug)
+    const post = getPostBySlug(decodeURIComponent(params.slug))
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://example.com'
     return {
       title: post.title,
@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PostPage({ params }: Props) {
   let post
   try {
-    post = getPostBySlug(params.slug)
+    post = getPostBySlug(decodeURIComponent(params.slug))
   } catch {
     notFound()
   }

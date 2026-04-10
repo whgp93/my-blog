@@ -12,7 +12,7 @@ interface Props {
 export default async function EditPostPage({ params }: Props) {
   let post
   try {
-    post = getPostBySlug(params.slug)
+    post = getPostBySlug(decodeURIComponent(params.slug))
   } catch {
     notFound()
   }
