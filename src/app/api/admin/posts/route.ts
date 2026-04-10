@@ -1,7 +1,12 @@
-import { writeFile } from 'fs/promises'
+import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 import { NextRequest, NextResponse } from 'next/server'
+import TurndownService from 'turndown'
 import { getAllPosts } from '@/lib/posts'
+
+const td = new TurndownService({ headingStyle: 'atx', bulletListMarker: '-' })
+
+const postsDir = path.join(process.cwd(), 'content', 'posts')
 
 export async function GET() {
   const posts = getAllPosts()
@@ -12,8 +17,8 @@ export async function POST(req: NextRequest) {
   try {
     const { title, category, image, excerpt, author, featured, slug, content } = await req.json()
 
-    if (!title || !slug || !content) {
-      return NextResponse.json({ error: 'الحقول المطلوبة ناقصة' }, { status: 400 })
+    if (!title || !slug) {
+      return NextResponse.json({ error: 'العنوان والرابط مطلوبان' }, { status: 400 })
     }
 
     const today = new Date().toISOString().split('T')[0]
@@ -30,11 +35,12 @@ export async function POST(req: NextRequest) {
       '',
     ].join('\n')
 
-    const markdown = frontmatter + content
+    // Convert HTML from Tiptap to Markdown
+    const markdown = frontmatter + td.turndown(content ?? '')
 
     const sanitizedSlug = slug.replace(/[^a-zA-Z0-9\u0600-\u06FF._-]/g, '-')
-    const filePath = path.join(process.cwd(), 'content', 'posts', `${sanitizedSlug}.md`)
-    await writeFile(filePath, markdown, 'utf-8')
+    await mkdir(postsDir, { recursive: true })
+    await writeFile(path.join(postsDir, `${sanitizedSlug}.md`), markdown, 'utf-8')
 
     return NextResponse.json({ ok: true, slug: sanitizedSlug })
   } catch (error) {

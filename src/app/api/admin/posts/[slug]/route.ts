@@ -2,6 +2,9 @@ import { readFile, writeFile, unlink } from 'fs/promises'
 import path from 'path'
 import { NextRequest, NextResponse } from 'next/server'
 import matter from 'gray-matter'
+import TurndownService from 'turndown'
+
+const td = new TurndownService({ headingStyle: 'atx', bulletListMarker: '-' })
 
 function postPath(slug: string) {
   return path.join(process.cwd(), 'content', 'posts', `${slug}.md`)
@@ -42,7 +45,8 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
       '',
     ].join('\n')
 
-    await writeFile(postPath(params.slug), frontmatter + content, 'utf-8')
+    // Convert HTML from Tiptap to Markdown
+    await writeFile(postPath(params.slug), frontmatter + td.turndown(content ?? ''), 'utf-8')
     return NextResponse.json({ ok: true })
   } catch (error) {
     console.error('Update post error:', error)
